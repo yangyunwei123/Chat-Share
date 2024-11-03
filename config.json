@@ -1,0 +1,5 @@
+{
+    "secret_key":"your_admin_secret_key",
+    "authorization":"your_authorization",
+    "domain_chatgpt":"http://127.0.0.1:5005"
+}
