@@ -1,12 +1,13 @@
 ## 项目介绍  
 原项目地址https://github.com/Bear-biscuit/OAIFree_Share
 
-基于LG的chat2api项目，搭建一个共享站，方便给自己的小伙伴们使用  
+基于LQ的chat2api项目，搭建一个共享站，方便给自己的小伙伴们使用  
+项目地址https://github.com/lanqian528/chat2api
 
 ## 配置项  
 ### config.json
 secret_key最好复杂一点  
-authorization应当和chat2api的环境变量authorization设置的值相同
+authorization应当和chat2api的环境变量authorization设置的值相同  
 domain_chatgpt是chat2api的站点地址，需要替换成自己的项目地址  
 ```
 {
