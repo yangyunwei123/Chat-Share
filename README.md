@@ -66,6 +66,7 @@ docker-compose up -d
 密码：password
 ```
 请登录后在用户管理中更改用户名和密码 
+
 ![image](https://github.com/user-attachments/assets/2541f8d0-eb76-42fb-8ec7-24199fc93372)
 
 
