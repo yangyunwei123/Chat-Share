@@ -69,6 +69,9 @@ docker-compose up -d
 
 ![image](https://github.com/user-attachments/assets/2541f8d0-eb76-42fb-8ec7-24199fc93372)
 
+### 后台管理页面
+
+![image](https://github.com/user-attachments/assets/56ea9c43-6cfc-418c-a461-d4fc35b354eb)
 
 ## License
 
