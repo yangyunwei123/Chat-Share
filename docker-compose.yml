@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  chat2api:
-    image: h88782481/chat-share:latest
+  chatshare:
+    image: ghcr.io/h88782481/chat-share:latest
     container_name: chat-share
     restart: unless-stopped
     ports:
