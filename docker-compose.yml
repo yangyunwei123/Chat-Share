@@ -2,8 +2,8 @@ version: '3'
 
 services:
   chat2api:
-    image: h88782481/Chat-share:latest
-    container_name: Chat-share
+    image: h88782481/chat-share:latest
+    container_name: chat-share
     restart: unless-stopped
     ports:
       - '5100:5100'
