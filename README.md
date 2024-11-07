@@ -1,5 +1,4 @@
 ## 项目介绍  
-基于原项目地址https://github.com/Bear-biscuit/OAIFree_Share修改而来
 
 基于LQ的chat2api项目，搭建一个共享站，方便给自己的小伙伴们使用  
 项目地址https://github.com/lanqian528/chat2api
