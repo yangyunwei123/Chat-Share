@@ -42,7 +42,8 @@ def create_user():
         'password': generate_password_hash(data['password']),
         'role': data['role'],
         'bind_token': '',
-        'bind_email': ''
+        'bind_email': '',
+        'expiration_time': data['expiration_time']
     }
     
     globals.users.append(new_user)
@@ -71,6 +72,8 @@ def update_user(user_id):
     # 如果提供了新密码，则更新密码
     if data.get('password'):
         globals.users[user_index]['password'] = generate_password_hash(data['password'])
+    
+    globals.users[user_index]['expiration_time'] = data['expiration_time']
     
     save_users(globals.users)
     return jsonify({'success': True, 'message': '用户更新成功'})

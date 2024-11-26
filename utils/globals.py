@@ -85,7 +85,8 @@ if not users:
             "password": "pbkdf2:sha256:260000$CqvLDzNaezUTatZ2$61963529d02a0c0eb74212775872a910a1315d160c4df11da528ad3c03a5ea85",
             "role": "admin",
             "bind_token": "",
-            "bind_email": ""
+            "bind_email": "",
+            "expiration_time": ""
         }
     ]
 

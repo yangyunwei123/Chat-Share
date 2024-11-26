@@ -9,12 +9,6 @@ from utils.tools import *
 
 
 
-
-
-
-
-
-
 def is_main_process():
     import os
     return os.environ.get('WERKZEUG_RUN_MAIN') != 'true'
@@ -116,6 +110,69 @@ def init_auto_refresh():
 
 # 在应用启动时调用
 init_auto_refresh()
+
+
+# 删除过期用户
+def delete_expired_users():
+    print('开始检查并清理过期用户bind_token')
+    
+    # 获取当前时间
+    now = datetime.now()
+    active_users = []
+    # 遍历 globals.users 来检查用户的过期时间
+    for user in globals.users:
+        # 如果 expiration_time 字段为空，跳过此用户
+        if user.get('expiration_time')=="":
+            active_users.append(user)
+            continue
+        
+        try:
+            # 转换 expiration_time 为 datetime 对象
+            expiration_time = datetime.fromisoformat(user['expiration_time'])
+        except ValueError:
+            print(f"无效的过期时间格式，跳过用户 {user['username']}")
+            active_users.append(user)
+            continue
+        
+        
+        # 如果过期时间小于当前时间，设置 expiration_time 为空
+        if expiration_time < now:
+            user['expiration_time'] = ""
+            user['bind_email'] = ''
+            user['bind_token'] = ''
+            del_seedmap(user['id'])
+            active_users.append(user)
+            print(f"用户 {user['username']} 的过期时间已到，清除该用户绑定的token")
+            
+    globals.users = active_users
+    save_users(globals.users)
+    # 打印处理结果
+    print(f"过期用户的bind_token已设置为空")
+    
+    # 调度下一次检查
+    schedule_next_user_cleanup()
+
+
+# 设定定时任务
+def schedule_next_user_cleanup():
+    # 设定检查过期用户的时间间隔，例如每天检查一次
+    next_check = datetime.now() + timedelta(days=1)
+    delay_seconds = (next_check - datetime.now()).total_seconds()
+    
+    # 使用 threading.Timer 启动定时器
+    threading.Timer(delay_seconds, delete_expired_users).start()
+
+
+# 在应用启动时调用
+def init_user_cleanup():
+    print(f"在应用启动时初始化用户清理任务, 当前时间: {datetime.now()}")
+    # 启动定时器，开始检查过期用户
+    schedule_next_user_cleanup()
+
+
+# 初始化用户清理任务
+init_user_cleanup()
+
 
 # 手动刷新access token
 @app.route('/refresh_tokens', methods=['POST'])
