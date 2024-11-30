@@ -143,6 +143,9 @@ def delete_expired_users():
             del_seedmap(user['id'])
             active_users.append(user)
             print(f"用户 {user['username']} 的过期时间已到，清除该用户绑定的token")
+        else:
+            active_users.append(user)
+
             
     globals.users = active_users
     save_users(globals.users)
