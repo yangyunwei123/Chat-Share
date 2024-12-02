@@ -11,6 +11,7 @@ from gateway.login import *
 from gateway.timing import *
 from gateway.user import *
 from gateway.admin import *
+from gateway.claude import *
 
 # 启动 Flask 应用
 if __name__ == '__main__':

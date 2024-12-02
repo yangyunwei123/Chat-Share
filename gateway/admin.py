@@ -28,3 +28,23 @@ def chatgpt():
             return jsonify({"status": "success", "message": "chatToken.json 已更新！"}), 200
         else:
             return jsonify({"status": "error", "message": "无效的数据格式！"}), 400
+        
+# Claude 主页路由
+@app.route('/claude', methods=['GET', 'POST'])
+@admin_required
+def claude():
+
+    if request.method == 'GET':
+        # 加载并显示 chatToken.json 文件中的内容
+        return render_template('claude.html', retokens=globals.cluadeToken)
+
+    if request.method == 'POST':
+        # 获取更新后的 cltoken 数据
+        globals.cluadeToken = request.json.get('cltokens')
+        
+        # 如果数据格式有效，保存到文件
+        if globals.cluadeToken:
+            save_cltoken(globals.cluadeToken)
+            return jsonify({"status": "success", "message": "claudeToken.json 已更新！"}), 200
+        else:
+            return jsonify({"status": "error", "message": "无效的数据格式！"}), 400

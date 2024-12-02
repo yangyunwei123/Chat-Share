@@ -9,7 +9,7 @@ load_dotenv(encoding="ascii")
 secret_key = os.getenv('SECRET_KEY', None)
 authorization = os.getenv('AUTHORIZATION', False)
 domain_chatgpt = os.getenv('DOMAIN_CHATGPT', '')
-
+domain_claude = os.getenv('DOMAIN_CLAUDE', '')
 
 
 logger.info("-" * 60)
@@ -19,4 +19,5 @@ logger.info("Environment variables:")
 logger.info("SECRET_KEY:        " + str(secret_key))
 logger.info("AUTHORIZATION:     " + str(authorization))
 logger.info("DOMAIN_CHATGPT:          " + str(domain_chatgpt))
+logger.info("DOMAIN_CLAUDE:          " + str(domain_claude))
 logger.info("-" * 60)

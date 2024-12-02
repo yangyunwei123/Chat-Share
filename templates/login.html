@@ -110,7 +110,20 @@
                     >
                 </div>
             </div>
+            <!-- 下拉菜单：选择登录到 GPT 或者 Claude -->
+            <div class="relative">
+                <select 
+                    name="login_target" 
+                    required
+                    class="form-input w-full py-3 pl-4 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-700"
+                >
+                    <option value="" disabled selected>请选择登录目标</option>
+                    <option value="manage">登录到管理端</option>
+                    <option value="gpt">登录到 GPT</option>
+                    <option value="claude">登录到 Claude</option>
 
+                </select>
+            </div>
             <button 
                 type="submit"
                 class="login-button w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"

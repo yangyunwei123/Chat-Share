@@ -7,6 +7,7 @@ AUTO_REFRESH_CONFIG = os.path.join(DATA_FOLDER, "auto_refresh_config.json")
 CHAT_TOKEN = os.path.join(DATA_FOLDER, "chatToken.json")
 FAILED_TOKENS = os.path.join(DATA_FOLDER, "failed_tokens.json")
 REFRESH_HISTORY = os.path.join(DATA_FOLDER, "refresh_history.json")
+CLAUDE_TOKEN = os.path.join(DATA_FOLDER, "claudeToken.json")
 USERS = os.path.join(DATA_FOLDER, "users.json")
 
 auto_refresh_config = {}
@@ -14,7 +15,7 @@ chatToken = []
 failed_tokens = []
 refresh_history = []
 users = []
-
+cluadeToken = []
 
 # 上一级目录
 if not os.path.exists(DATA_FOLDER):
@@ -45,6 +46,18 @@ if os.path.exists(CHAT_TOKEN):
             chatToken = []
 else:
     chatToken = []
+
+
+# 读取 claudeToken.json 文件
+if os.path.exists(CLAUDE_TOKEN):
+    with open(CLAUDE_TOKEN, "r") as f:
+        try:
+            cluadeToken = json.load(f)
+        except:
+            cluadeToken = []
+else:
+    cluadeToken = []
+
 
 # 读取 failed_tokens.json 文件
 if os.path.exists(FAILED_TOKENS):
@@ -86,13 +99,21 @@ if not users:
             "role": "admin",
             "bind_token": "",
             "bind_email": "",
-            "expiration_time": ""
+            "expiration_time": "",
+            "bind_claude_token": "",
+            "bind_claude_email": "",
+            "claude_expiration_time": ""
         }
     ]
 
 # 保存更新后的 chatToken.json 文件
 def save_retoken(updated_tokens):
     with open('data/chatToken.json', 'w') as f:
+        json.dump(updated_tokens, f, indent=4)
+        
+# 保存更新后的 claudeToken.json 文件
+def save_cltoken(updated_tokens):
+    with open('data/claudeToken.json', 'w') as f:
         json.dump(updated_tokens, f, indent=4)
 
 # 写入 failed_tokens.json 文件

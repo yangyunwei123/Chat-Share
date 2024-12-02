@@ -11,15 +11,5 @@ from utils.tools import *
 def index():
     
     if session.get('logged_in'):
-        if session.get('role') == 'user':
-            # 获取 OAuth 登录 URL
-            logurl = getoauth(session.get('user_id'))
-            session.clear()
-            return redirect(logurl)
-        else:
-            return redirect(url_for('chatgpt'))  
-    
+        session.clear()
     return redirect(url_for('login'))
-
-
-

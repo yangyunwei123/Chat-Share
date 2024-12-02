@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">用户列表</h2>
         <button id="sycGatewayBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-            一键同步网关
+            一键同步GPT网关
         </button>
         <button id="addUserBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
             添加用户
@@ -28,11 +28,19 @@
                 </th>
                 <th
                     class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    绑定的账号
+                    绑定GPT账号
                 </th>
                 <th
                     class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    过期时间
+                    GPT过期时间
+                </th>
+                <th
+                    class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    绑定Claude账号
+                </th>
+                <th
+                    class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Claude过期时间
                 </th>
                 <th
                     class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -79,14 +87,23 @@
                             <option value="user">普通用户</option>
                         </select>
                     </div>
-                    <!-- 添加过期时间选择 -->
+                    <!-- 添加GPT过期时间选择 -->
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="expirationDate">
-                            过期时间
+                            GPT过期时间
                         </label>
                         <input
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="expirationDate" type="datetime-local">
+                    </div>
+                    <!-- 添加Claude过期时间选择 -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="expirationClaude">
+                            Claude过期时间
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="expirationClaude" type="datetime-local">
                     </div>
                     <div class="flex items-center justify-end">
                         <button type="button" onclick="closeModal()"
@@ -107,13 +124,19 @@
     <div id="bindModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">ChatGPT账号</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">请选择要绑定的账号</h3>
                 <form id="bindForm">
                     <input type="hidden" id="userId">
                     <div class="mb-4">
                         <select
                             class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="email" required>
+                            id="email">
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <select
+                            class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="claudeEmail">
                         </select>
                     </div>
                     <div class="flex items-center justify-end">
@@ -121,7 +144,7 @@
                             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
                             取消
                         </button>
-                        <button type="submit" onclick="closeModal()"
+                        <button type="submit"
                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                             保存
                         </button>
@@ -165,11 +188,15 @@
                     <td class="px-6 py-4 whitespace-nowrap">${user.role}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${user.bind_email}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${user.expiration_time}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${user.bind_claude_email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${user.claude_expiration_time}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button onclick="bindChatGPT('${user.id}')" class="text-blue-600 hover:text-blue-900 mr-4">绑定</button>
+                        <button onclick="bindChatGPT('${user.id}')" class="text-blue-600 hover:text-blue-900 mr-4">绑定GPT</button>
+                        <button onclick="bindClaude('${user.id}')" class="text-blue-600 hover:text-blue-900 mr-4">绑定Claude</button>
                         <button onclick="editUser('${user.id}')" class="text-blue-600 hover:text-blue-900 mr-4">编辑</button>
                         <button onclick="deleteUser('${user.id}')" class="text-red-600 hover:text-red-900">删除</button>
-                        <button onclick="deleteBind('${user.id}')" class="text-red-600 hover:text-red-900">解绑</button>
+                        <button onclick="deleteBind('${user.id}')" class="text-red-600 hover:text-red-900">解绑GPT</button>
+                        <button onclick="deleteClaudeBind('${user.id}')" class="text-red-600 hover:text-red-900">解绑Claude</button>
                     </td>
                 `;
             tbody.appendChild(tr);
@@ -185,6 +212,7 @@
             document.getElementById('password').value = '';
             document.getElementById('role').value = user.role;
             document.getElementById('expirationDate').value = user.expiration_time;
+            document.getElementById('expirationClaude').value = user.claude_expiration_time;
         } else {
             form.reset();
             document.getElementById('userId').value = '';
@@ -206,11 +234,15 @@
     }
 
     // 打开绑定模态框
-    function openBindModal(user = null) {
-        fetch('/api/all_email')
+    function openBindModal(user = null,type) {
+        if(type == 1){
+            url = "/api/all_email"
+            fetch(url)
             .then(response => response.json())
             .then(data => {
                 const emailSelect = document.getElementById('email');
+                document.getElementById('email').classList.remove('hidden')
+                document.getElementById('claudeEmail').classList.add('hidden')
                 emailSelect.innerHTML = ''; 
                 document.getElementById('userId').value = user.id;
                 data.forEach(email => {
@@ -225,6 +257,30 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+        }else{
+            url = "/api/all_claude_email"
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const emailSelect = document.getElementById('claudeEmail');
+                document.getElementById('claudeEmail').classList.remove('hidden')
+                document.getElementById('email').classList.add('hidden')
+                emailSelect.innerHTML = ''; 
+                document.getElementById('userId').value = user.id;
+                data.forEach(email => {
+                    const option = document.createElement('option');
+                    option.value = email; 
+                    option.textContent = email; 
+                    emailSelect.appendChild(option);
+                });
+
+                if (user && user.email) {
+                    emailSelect.value = user.email; 
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
         bindModal.classList.remove('hidden');
     }
 
@@ -233,14 +289,20 @@
         bindModal.classList.add('hidden');
     }
 
-    // 绑定账号
+    // 绑定GPT账号
     function bindChatGPT(userId) {
         const user = users.find(u => u.id === userId);
         if (user) {
-            openBindModal(user);
+            openBindModal(user,1);
         }
     }
-
+    // 绑定Claude账号
+    function bindClaude(userId) {
+        const user = users.find(u => u.id === userId);
+        if (user) {
+            openBindModal(user,0);
+        }
+    }
 
 
     // 删除用户
@@ -259,10 +321,26 @@
         }
     }
 
-    // 解绑账号
+    // 解绑GPT账号
     function deleteBind(userId) {
         if (confirm('确定要解除这个用户绑定的ChatGPT账号吗？')) {
             fetch(`/api/del_bind/${userId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadUsers();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+
+    // 解绑Claude账号
+    function deleteClaudeBind(userId) {
+        if (confirm('确定要解除这个用户绑定的Claude账号吗？')) {
+            fetch(`/api/del_bindClaude/${userId}`, {
                 method: 'DELETE'
             })
                 .then(response => response.json())
@@ -283,6 +361,7 @@
             username: document.getElementById('username').value,
             password: document.getElementById('password').value,
             expiration_time: document.getElementById('expirationDate').value,
+            claude_expiration_time: document.getElementById('expirationClaude').value,
             role: document.getElementById('role').value
         };
 
@@ -312,18 +391,20 @@
         e.preventDefault();
         const userId = document.getElementById('userId').value;
         const emailSelect = document.getElementById('email');
+        const emailSelectClaude = document.getElementById('claudeEmail');
         const bindEmail = {email: emailSelect.value};
-
-        const url = `/api/bind/${userId}`;
+        const bindClaudeEmail = {email: emailSelectClaude.value};
+        
         const method = 'PUT';
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bindEmail)
-        })
+        if(document.getElementById('claudeEmail').classList.contains('hidden')){
+            url = `/api/bind/${userId}`;
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bindEmail)
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -332,6 +413,25 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+        }else{
+            url = `/api/bindClaude/${userId}`;
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bindClaudeEmail)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeBindModal();
+                    loadUsers();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
     });
 
     // 添加用户按钮点击事件

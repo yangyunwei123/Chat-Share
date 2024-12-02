@@ -130,3 +130,42 @@ def del_seedmap(user_id):
     }
     response = requests.delete(url, headers=headers, data=json.dumps(data))
     return response.status_code
+
+# 获取Claude登陆链接
+def get_claude_login_url(session_key,uname):
+    domain = configs.domain_claude
+    url = f'{domain}/manage-api/auth/oauth_token'
+    
+    # 请求体参数
+    data = {
+        'session_key': session_key,
+        'unique_name': uname,  # 生成唯一标识符
+        "expires_in": 3600 #过期时间1小时
+    }
+
+    # 设置请求头
+    headers = {'Content-Type': 'application/json'}
+
+    try:
+        # 发送 POST 请求
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        # 检查响应状态码是否为200
+        if response.status_code == 200:
+            response_data = response.json()
+
+            # 检查 'login_url' 是否存在
+            if 'login_url' in response_data:
+                login_url = response_data['login_url']
+                
+                # 如果URL没有以http开头，拼接基础URL
+                if not login_url.startswith('http'):
+                    return f'{domain}' + login_url
+                return login_url
+        
+        # 如果状态码不是200或login_url不存在，返回None
+        return None
+    
+    except requests.RequestException as e:
+        # 捕获异常并返回错误信息
+        return None

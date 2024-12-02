@@ -3,6 +3,7 @@
 基于LQ的chat2api项目，搭建一个共享站，方便给自己的小伙伴们使用  
 项目地址https://github.com/lanqian528/chat2api
 
+同时支持秦始皇的fuclaude，如果以后有开源的claude镜像会优先适配开源
 ## 配置项  
 在docker-compose.yml中配置三个环境变量
 

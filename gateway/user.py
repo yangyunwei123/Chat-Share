@@ -43,7 +43,10 @@ def create_user():
         'role': data['role'],
         'bind_token': '',
         'bind_email': '',
-        'expiration_time': data['expiration_time']
+        'expiration_time': data['expiration_time'],
+        'bind_claude_token': '',
+        'bind_claude_email': '',
+        'claude_expiration_time': data['claude_expiration_time']
     }
     
     globals.users.append(new_user)
@@ -74,6 +77,7 @@ def update_user(user_id):
         globals.users[user_index]['password'] = generate_password_hash(data['password'])
     
     globals.users[user_index]['expiration_time'] = data['expiration_time']
+    globals.users[user_index]['claude_expiration_time'] = data['claude_expiration_time']
     
     save_users(globals.users)
     return jsonify({'success': True, 'message': '用户更新成功'})
@@ -115,6 +119,37 @@ def del_bind_account(user_id):
 def all_email():
     # 返回账号的全部email
     return jsonify([token['email'] for token in globals.chatToken if 'email' in token])
+
+# 绑定Claude账号
+@app.route('/api/bindClaude/<user_id>', methods=['PUT'])
+@admin_required
+def bind_claude_account(user_id):
+    data = request.get_json()
+    user_index = next((i for i, user in enumerate(globals.users) if user['id'] == user_id), None)
+    token_index = next((i for i, token in enumerate(globals.cluadeToken) if token['email'] == data['email']), None)
+    globals.users[user_index]['bind_claude_email'] = data['email']
+    globals.users[user_index]['bind_claude_token'] = globals.cluadeToken[token_index]['skToken']
+    save_users(globals.users)
+    return jsonify({'success': True, 'message': '账号绑定成功'})
+
+# 解绑Claude账号
+@app.route('/api/del_bindClaude/<user_id>', methods=['DELETE'])
+@admin_required
+def del_bind_claude_account(user_id):
+    
+    user_index = next((i for i, user in enumerate(globals.users) if user['id'] == user_id), None)
+    globals.users[user_index]['bind_claude_email'] = ''
+    globals.users[user_index]['bind_claude_token'] = ''
+    save_users(globals.users)
+    return jsonify({'success': True, 'message': '账号解绑成功'})
+
+
+# 获取全部Claude账号的email
+@app.route('/api/all_claude_email', methods=['GET'])
+@admin_required
+def all_claude_email():
+    # 返回账号的全部email
+    return jsonify([token['email'] for token in globals.cluadeToken if 'email' in token])
 
 # 删除用户
 @app.route('/api/users/<user_id>', methods=['DELETE'])

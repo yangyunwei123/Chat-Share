@@ -13,7 +13,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+        loginTarget = request.form['login_target']
         user = next((user for user in globals.users if user['username'] == username), None)
         
         if user and check_password_hash(user['password'], password):
@@ -26,10 +26,16 @@ def login():
             flash('登录成功！', 'success')
             
             # 如果是管理员，跳转到管理页面，否则跳转到ChatGPT共享页面
-            if user['role'] == 'admin':
+            if user['role'] == 'admin' and loginTarget == 'manage':
                 return redirect(url_for('chatgpt'))
-            else:
-                return redirect(url_for('index'))
+            elif loginTarget == 'gpt':
+                logurl = getoauth(session.get('user_id'))
+                session.clear()
+                return redirect(logurl)
+            elif loginTarget == 'claude':
+                logurl = get_claude_login_url(user['bind_claude_token'],session.get('user_id'))
+                session.clear()
+                return redirect(logurl)
         else:
             flash('用户名或密码错误，请重试。', 'danger')
     
