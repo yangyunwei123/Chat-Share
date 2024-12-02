@@ -112,7 +112,7 @@ def init_auto_refresh():
 init_auto_refresh()
 
 
-# 删除过期用户
+# 删除gpt过期用户
 def delete_expired_users():
     print('开始检查并清理过期用户bind_token')
     
@@ -155,8 +155,50 @@ def delete_expired_users():
     # 调度下一次检查
     schedule_next_user_cleanup()
 
+# 删除claude过期用户
+def delete_expired_users_claude():
+    print('开始检查并清理过期用户bind_token')
+    
+    # 获取当前时间
+    now = datetime.now()
+    active_users = []
+    # 遍历 globals.users 来检查用户的过期时间
+    for user in globals.users:
+        # 如果 claude_expiration_time 字段为空，跳过此用户
+        if user.get('claude_expiration_time')=="":
+            active_users.append(user)
+            continue
+        
+        try:
+            # 转换 claude_expiration_time 为 datetime 对象
+            claude_expiration_time = datetime.fromisoformat(user['claude_expiration_time'])
+        except ValueError:
+            print(f"无效的过期时间格式，跳过用户 {user['username']}")
+            active_users.append(user)
+            continue
+        
+        
+        # 如果过期时间小于当前时间，设置 claude_expiration_time 为空
+        if claude_expiration_time < now:
+            user['claude_expiration_time'] = ""
+            user['bind_claude_email'] = ''
+            user['bind_claude_token'] = ''
+            active_users.append(user)
+            print(f"用户 {user['username']} 的过期时间已到，清除该用户绑定的token")
+        else:
+            active_users.append(user)
 
-# 设定定时任务
+            
+    globals.users = active_users
+    save_users(globals.users)
+    # 打印处理结果
+    print(f"过期用户的bind_token已设置为空")
+    
+    # 调度下一次检查
+    schedule_next_user_cleanup_claude()
+
+
+# 设定gpt定时任务
 def schedule_next_user_cleanup():
     # 设定检查过期用户的时间间隔，例如每天检查一次
     next_check = datetime.now() + timedelta(days=1)
@@ -165,12 +207,22 @@ def schedule_next_user_cleanup():
     # 使用 threading.Timer 启动定时器
     threading.Timer(delay_seconds, delete_expired_users).start()
 
+# 设定claude定时任务
+def schedule_next_user_cleanup_claude():
+    # 设定检查过期用户的时间间隔，例如每23小时检查一次
+    next_check = datetime.now() + timedelta(minutes=1380)
+    delay_seconds = (next_check - datetime.now()).total_seconds()
+    
+    # 使用 threading.Timer 启动定时器
+    threading.Timer(delay_seconds, delete_expired_users_claude).start()
+
 
 # 在应用启动时调用
 def init_user_cleanup():
     print(f"在应用启动时初始化用户清理任务, 当前时间: {datetime.now()}")
     # 启动定时器，开始检查过期用户
     schedule_next_user_cleanup()
+    schedule_next_user_cleanup_claude()
 
 
 # 初始化用户清理任务
