@@ -1,194 +1,404 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录 | GPT共享</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <title>Sign up and login form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}">
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        body {
+            background-color: #A8A8A8;
+            font-family: 'Maple Mono', 'Roboto', sans-serif;
         }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+
+        @font-face {
+            font-family: 'Maple Mono';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 400;
+            src: url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff) format('woff');
         }
-        
-        .form-input {
-            transition: all 0.3s ease;
+
+        .container {
+            width: 600px;
+            height: 350px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: inline-flex;
+            overflow: hidden;
         }
-        
-        .form-input:focus {
-            transform: translateY(-2px);
+
+        @media (min-width: 768px) {
+            .container {
+                transform: translate(-50%, -50%) scale(1.3);
+            }
         }
-        
-        .login-button {
-            transition: all 0.3s ease;
+
+        .backbox {
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            background-color: rgba(64, 64, 64, 1);
+            width: 100%;
+            height: 80%;
+            position: absolute;
+            transform: translate(0, -50%);
+            top: 50%;
+            display: inline-flex;
         }
-        
-        .login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+
+        .frontbox {
+            background-color: white;
+            border-radius: 20px;
+            height: 100%;
+            width: 50%;
+            z-index: 10;
+            position: absolute;
+            right: 3%;
+            transition: right .8s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        .moving {
+            right: 47%;
+        }
+
+        .loginMsg, .signupMsg {
+            width: 50%;
+            height: 100%;
+            font-size: 15px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+
+        .loginMsg .title,
+        .signupMsg .title {
+            font-weight: 300;
+            font-size: 23px;
+        }
+
+        .loginMsg p,
+        .signupMsg p {
+            font-weight: 100;
+        }
+
+        .textcontent {
+            color: white;
+            padding: 0 12%;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .loginMsg button,
+        .signupMsg button {
+            backdrop-filter: blur(10px);
+            background-color: rgba(64, 64, 64, 0.6);
+            border: 2px solid white;
+            border-radius: 10px;
+            color: white;
+            font-size: 12px;
+            box-sizing: content-box;
+            font-weight: 300;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: 'Maple Mono', 'Roboto', sans-serif;
+        }
+
+        .login, .signup {
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .login h2,
+        .signup h2 {
+            color: #35B729;
+            font-size: 22px;
+            margin-top: 40px;
+        }
+
+        .inputbox {
+            margin-top: 30px;
+        }
+
+        .login input,
+        .signup input,
+        .login select {
+            display: block;
+            width: 100%;
+            height: 40px;
+            background-color: #f2f2f2;
+            border: none;
+            margin-bottom: 20px;
+            font-size: 12px;
+            padding-left: 10px;
+            box-sizing: border-box;
+            color: #555;
+            font-family: 'Maple Mono', 'Roboto', sans-serif;
+        }
+
+        .login input:focus,
+        .signup input:focus,
+        .login select:focus {
+            outline: none;
+        }
+
+        .login button,
+        .signup button {
+            background-color: #35B729;
+            border: none;
+            color: white;
+            font-size: 12px;
+            font-weight: 300;
+            box-sizing: content-box;
+            padding: 10px;
+            border-radius: 10px;
+            width: 60px;
+            position: absolute;
+            right: 30px;
+            bottom: 30px;
+            cursor: pointer;
+        }
+
+        .loginMsg, .signupMsg {
+            transition: opacity .8s ease-in-out;
+        }
+
+        .visibility {
+            opacity: 0;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .remember-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1;
+        }
+
+        .remember-container input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            accent-color: rgba(255, 255, 255, 0.32);
+            margin: 0;
+        }
+
+        .remember-container label {
+            line-height: 1;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .flash-messages {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            width: 90%;
+            max-width: 600px;
         }
 
         .alert {
-            animation: slideIn 0.5s ease-out forwards;
+            margin-top: 125px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            margin-bottom: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .footer {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15px;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
         }
+
+        .footer a {
+            color: #000000;
+            text-decoration: none;
+            pointer-events: auto;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
-    <!-- 登录卡片 -->
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 animate-fade-in">
-        <!-- Logo和标题 -->
-        <div class="text-center mb-8">
-            <div class="inline-block p-3 rounded-full bg-blue-50 mb-4">
-                <i class="fas fa-user-circle text-4xl text-blue-500"></i>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800">欢迎回来</h1>
-            <p class="text-gray-500 mt-2">请登录您的账号</p>
-        </div>
-
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-500{% else %}bg-green-100 text-green-700 border-l-4 border-green-500{% endif %}">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                {% if category == 'error' %}
-                                    <i class="fas fa-exclamation-circle"></i>
-                                {% else %}
-                                    <i class="fas fa-check-circle"></i>
-                                {% endif %}
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm">{{ message }}</p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <!-- 登录表单 -->
-        <form action="{{ url_for('login') }}" method="post" class="space-y-6">
-            <div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-user text-gray-400"></i>
-                    </div>
-                    <input 
-                        type="text" 
-                        name="username" 
-                        placeholder="用户名" 
-                        required
-                        class="form-input w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-700"
-                    >
+<body>
+<!-- Flash messages outside container and centered -->
+<div id="flash-messages" class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert">
+                    {% if category == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% else %}
+                        <i class="fas fa-check-circle"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
                 </div>
-            </div>
-            
-            <div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-gray-400"></i>
-                    </div>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        placeholder="密码" 
-                        required
-                        class="form-input w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-700"
-                    >
-                </div>
-            </div>
-            <!-- 记住我选项 -->
-            <div class="flex items-center">
-                <input
-                    type="checkbox"
-                    id="remember_me"
-                    name="remember_me"
-                    class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-                >
-                <label for="remember_me" class="ml-2 block text-sm text-gray-700">
-                    记住我
-                </label>
-            </div>
-            <!-- 下拉菜单：选择登录到 GPT 或者 Claude -->
-            <div class="relative">
-                <select 
-                    name="login_target" 
-                    required
-                    class="form-input w-full py-3 pl-4 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-700"
-                >
-                    <option value="" disabled selected>请选择登录目标</option>
-                    <option value="manage">登录到管理端</option>
-                    <option value="gpt">登录到 GPT</option>
-                    <option value="claude">登录到 Claude</option>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 
-                </select>
+<div class="container">
+    <div class="backbox">
+        <div class="loginMsg">
+            <div class="textcontent">
+                <p class="title">需要访问后台?</p>
+                <p>登录以管理系统设置和配置</p>
+                <button id="switch1">后台登录</button>
             </div>
-            <button 
-                type="submit"
-                class="login-button w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-                登录
-                <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-        </form>
-
-        <!-- 额外链接 -->
-        <div class="mt-6 text-center text-sm">
-            <a href="mailto:your@email.com" class="text-blue-500 hover:text-blue-600 font-medium">联系管理员</a>
         </div>
-
-        <!-- 页脚 -->
-        <div class="mt-8 text-center text-sm text-gray-500">
-            <p>© 2024 ChatGPT共享. Created by <a style="color: rgb(106, 149, 228);" href="https://github.com/h88782481/Chat-Share" target="_blank" rel="noopener noreferrer">Baimo</a></p>
+        <div class="signupMsg visibility">
+            <div class="textcontent">
+                <p class="title">需要使用 AI?</p>
+                <p>登录以访问 ChatGPT 或 Claude 服务</p>
+                <button id="switch2">AI 登录</button>
+            </div>
         </div>
     </div>
-    <!-- JavaScript for Remember Me functionality -->
-    <script>
-        // 页面加载时检查并填充保存的用户信息
-        window.onload = function() {
-            const savedUsername = localStorage.getItem('rememberedUsername');
-            const savedLoginTarget = localStorage.getItem('rememberedLoginTarget');
-            const rememberMe = localStorage.getItem('rememberMe') === 'true';
-            
-            if (savedUsername && rememberMe) {
-                document.getElementById('username').value = savedUsername;
-                document.getElementById('remember_me').checked = true;
-            }
-            
-            if (savedLoginTarget && rememberMe) {
-                document.getElementById('login_target').value = savedLoginTarget;
-            }
-        };
+    <!-- backbox -->
 
-        // 表单提交时保存用户信息
-        document.getElementById('loginForm').addEventListener('submit', function() {
-            const rememberMe = document.getElementById('remember_me').checked;
-            const username = document.getElementById('username').value;
-            const loginTarget = document.getElementById('login_target').value;
-            
-            if (rememberMe) {
-                localStorage.setItem('rememberedUsername', username);
-                localStorage.setItem('rememberedLoginTarget', loginTarget);
-                localStorage.setItem('rememberMe', 'true');
-            } else {
-                localStorage.removeItem('rememberedUsername');
-                localStorage.removeItem('rememberedLoginTarget');
-                localStorage.setItem('rememberMe', 'false');
-            }
-        });
-    </script>
+    <div class="frontbox">
+        <div class="login">
+            <h2>登录到 AI</h2>
+            <form id="loginForm" action="{{ url_for('login') }}" method="post">
+                <div class="inputbox">
+                    <input id="username" type="text" name="username" placeholder="用户名" required>
+                    <input type="password" name="password" placeholder="密码" required>
+                    <select id="login_target" name="login_target" required>
+                        <option value="gpt">登录到 ChatGPT</option>
+                        <option value="claude">登录到 Claude</option>
+                    </select>
+                    <div class="remember-container">
+                        <input id="remember_me" type="checkbox" name="remember_me">
+                        <label for="remember_me">记住我</label>
+                    </div>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+
+        <div class="signup hide">
+            <h2>登录到后台</h2>
+            <form action="{{ url_for('login') }}" method="post">
+                <div class="inputbox">
+                    <input type="text" name="username" placeholder="Admin" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="hidden" name="login_target" value="manage">
+                </div>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>© 2025 <a href="https://github.com/h88782481/Chat-Share" target="_blank" rel="noopener noreferrer">Chat-Share by
+        Baimo</a></p>
+</footer>
+
+<script>
+    var $loginMsg = $('.loginMsg'),
+        $loginForm = $('.login'),
+        $signupMsg = $('.signupMsg'),
+        $signupForm = $('.signup'),
+        $frontbox = $('.frontbox');
+
+    $('#switch1').on('click', function () {
+        $loginMsg.addClass("visibility");
+        $signupMsg.removeClass("visibility");
+        $frontbox.addClass("moving");
+        $loginForm.addClass('hide');
+        $signupForm.removeClass('hide');
+    });
+
+    $('#switch2').on('click', function () {
+        $signupMsg.addClass("visibility");
+        $loginMsg.removeClass("visibility");
+        $frontbox.removeClass("moving");
+        $signupForm.addClass('hide');
+        $loginForm.removeClass('hide');
+    });
+
+    window.onload = function () {
+        const savedUsername = localStorage.getItem('rememberedUsername');
+        const savedLoginTarget = localStorage.getItem('rememberedLoginTarget');
+        const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+        if (savedUsername && rememberMe) {
+            document.getElementById('username').value = savedUsername;
+            document.getElementById('remember_me').checked = true;
+        }
+
+        if (savedLoginTarget && rememberMe) {
+            document.getElementById('login_target').value = savedLoginTarget;
+        }
+    };
+
+    document.getElementById('loginForm').addEventListener('submit', function () {
+        const rememberMe = document.getElementById('remember_me').checked;
+        const username = document.getElementById('username').value;
+        const loginTarget = document.getElementById('login_target').value;
+
+        if (rememberMe) {
+            localStorage.setItem('rememberedUsername', username);
+            localStorage.setItem('rememberedLoginTarget', loginTarget);
+            localStorage.setItem('rememberMe', 'true');
+        } else {
+            localStorage.removeItem('rememberedUsername');
+            localStorage.removeItem('rememberedLoginTarget');
+            localStorage.setItem('rememberMe', 'false');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', function () {
+        const flashBox = document.getElementById('flash-messages');
+        if (flashBox && flashBox.innerText.trim() !== '') {
+            flashBox.style.display = 'block';
+            setTimeout(() => {
+                flashBox.style.display = 'none';
+            }, 3000);
+        }
+    });
+
+</script>
+
 </body>
 </html>
